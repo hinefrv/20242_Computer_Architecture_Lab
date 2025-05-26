@@ -5,6 +5,7 @@
 .eqv ORANGE        0x00FFA500            # Mã màu cam (cho ký hiệu X)
 .eqv BLUE          0x000000FF            # Mã màu xanh dương (cho ký hiệu O)
 .eqv WHITE         0x00FFFFFF            # Mã màu trắng (cho lưới)
+#.eqv BACKGROUND    0x00eeeeee            # Mã màu giống giao diện của Bitmap (cho lưới)
 .eqv BLACK         0x00000000            # Mã màu đen (cho vùng trống)
 
 .data 0x10010400
@@ -197,11 +198,11 @@ process_move_logic:
     add s0, s0, t5              # Thêm offset để vẽ tại ô tương ứng
     li t0, 1                    # Kiểm tra người chơi
     beq s3, t0, draw_player_X_handler # Nếu người chơi là X, vẽ X
-    li s1, BLUE                # Màu xanh lá cho O
+    li s1, BLUE                # Màu xanh dương cho O
     jal draw_O                  # Gọi hàm vẽ O
     j after_draw_in_handler
 draw_player_X_handler:
-    li s1, ORANGE                  # Màu đỏ cho X
+    li s1, ORANGE                  # Màu cam cho X
     jal draw_X                  # Gọi hàm vẽ X
 after_draw_in_handler:
     jal check_win_or_draw       # Kiểm tra thắng/thua/hòa
@@ -249,6 +250,7 @@ init_game_state:
     # --- Phần 1: Vẽ lưới tĩnh màu trắng ---
     li s0, MONITOR_SCREEN        # Tải địa chỉ màn hình bitmap
     li s1, WHITE                # Màu trắng cho lưới
+    #li s1, BACKGROUND          # Dùng cái này nếu muốn chỉ thấy mỗi ô màu đen ( tức là màu các đường kẻ lưới giống màu giao diện Bitmap)
     # Vẽ 4 đường ngang tại hàng 3, 7, 11, 15
     li t0, 192                  # Offset cho hàng 3 (3*64)
     jal draw_horizontal_line_segment
@@ -354,7 +356,7 @@ set_player:
 
 #-------------------------------------------------------------------------------
 # draw_horizontal_line_segment:
-# Mô tả: Vẽ một đường ngang 16 pixel màu trắng từ PHẢI sang TRÁI trên màn hình bitmap
+# Mô tả: Vẽ một đường ngang 16 ô màu trắng từ PHẢI sang TRÁI trên màn hình bitmap
 # Args: s0 = địa chỉ màn hình (MONITOR_SCREEN), s1 = màu (WHITE), t0 = offset hàng
 # Thanh ghi sử dụng: t1, t2
 #-------------------------------------------------------------------------------
